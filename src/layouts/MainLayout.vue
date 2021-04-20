@@ -5,12 +5,25 @@
         <!-- <q-btn dense flat round icon="menu" @click="left = !left" /> -->
 
         <q-toolbar-title>
-          <img class="logo" src="~assets/ClothHubLogo.png" />
+          <img
+            v-if="!$q.platform.is.mobile"
+            class="logo"
+            src="~assets/ClothHubLogo.png"
+          />
+          <img
+            v-else
+            class="logo-mobile"
+            src="~assets/ClothHubLogoMobile.png"
+          />
         </q-toolbar-title>
 
-        <div>
+        <div v-if="!$q.platform.is.mobile">
           <q-btn>Login</q-btn>
           <q-btn>Register</q-btn>
+          <q-btn><i class="fas fa-shopping-cart fa-lg"></i></q-btn>
+          <q-btn><i class="fas fa-bars fa-lg"></i></q-btn>
+        </div>
+        <div v-else>
           <q-btn><i class="fas fa-shopping-cart fa-lg"></i></q-btn>
           <q-btn><i class="fas fa-bars fa-lg"></i></q-btn>
         </div>
@@ -18,9 +31,9 @@
     </q-header>
 
     <q-drawer
+      v-if="!$q.platform.is.mobile"
       content-class="bg-black text-white"
       show-if-above
-      v-model="left"
       side="left"
     >
       <div class="q-mt-lg row">
@@ -38,11 +51,17 @@
     <q-page-container>
       <router-view />
     </q-page-container>
+
+    <RegisterModal></RegisterModal>
   </q-layout>
 </template>
 
 <script>
+import { Platform } from "quasar";
+import RegisterModal from "../components/RegisterModal";
 export default {
+  name: "MainLayout",
+  components: { Platform, RegisterModal },
   data() {
     return {
       left: false
@@ -58,6 +77,9 @@ export default {
 
 .header-border {
   border-bottom: 3px solid white;
+}
+.logo-mobile {
+  width: 20vw;
 }
 
 .logo {
