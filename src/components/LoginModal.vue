@@ -3,7 +3,7 @@
     <q-dialog persistent :value="openModal">
       <q-card class="card text-white">
         <q-card-section>
-          <div class="text-h6">Register</div>
+          <div class="text-h6">Login</div>
         </q-card-section>
 
         <q-card-section class="card-section">
@@ -32,19 +32,6 @@
               <i class="fas fa-key"></i>
             </template>
           </q-input>
-          <q-input
-            color="orange-4"
-            standout
-            type="password"
-            v-model="confirmPassword"
-            label="Confirm Password"
-            error-message="Password and Confirmpassword not the same."
-            :error="isConfirmPassword"
-          >
-            <template v-slot:prepend>
-              <i class="fas fa-key"></i>
-            </template>
-          </q-input>
           <q-spinner
             class="spinner"
             v-if="isLoading"
@@ -54,7 +41,7 @@
         </q-card-section>
 
         <q-card-actions class="card-section" align="right">
-          <q-btn class="button" @click="register()" flat label="Register" />
+          <q-btn class="button" @click="login()" flat label="Login" />
           <q-btn
             @click="closeModal()"
             class="button"
@@ -77,7 +64,7 @@
           <q-btn
             @click="
               alert = false;
-              closeModal();
+              registerCode == '' ? closeModal() : 0;
             "
             class="button"
             flat
@@ -92,14 +79,13 @@
 
 <script>
 export default {
-  name: "RegisterModal",
+  name: "LoginModal",
   props: ["openModal"],
   data() {
     return {
       email: "",
       fullname: "",
       password: "",
-      confirmPassword: "",
       registerCode: "",
       isLoading: false,
       alert: false
@@ -120,41 +106,24 @@ export default {
       } else {
         return false;
       }
-    },
-    isConfirmPassword() {
-      if (
-        (this.confirmPassword !== "") &
-        (this.confirmPassword !== this.password)
-      ) {
-        return true;
-      } else {
-        return false;
-      }
     }
   },
   methods: {
     closeModal() {
       this.$emit("closeModal");
     },
-    async register() {
+    async login() {
       this.isLoading = true;
       try {
-        if (
-          this.password != "" &&
-          this.email != "" &&
-          this.confirmPassword != ""
-        ) {
-          let res = await this.$store.dispatch("register", {
+        if (this.password != "" && this.email != "") {
+          let res = await this.$store.dispatch("login", {
             email: this.email,
             password: this.password
           });
           console.log("res ", res);
-          if (res) {
+          if (!res) {
             this.alert = true;
-            this.registerCode = "Register Success";
-          } else {
-            this.alert = true;
-            this.registerCode = "Register Failed! The Email is already.";
+            this.registerCode = "Login Failed";
           }
         } else {
           this.alert = true;
@@ -162,11 +131,10 @@ export default {
         }
       } catch {
         this.alert = true;
-        this.registerCode = "Register Failed";
+        this.registerCode = "Login Failed";
       }
       this.password = "";
       this.email = "";
-      this.confirmPassword = "";
       this.isLoading = false;
     }
   }
